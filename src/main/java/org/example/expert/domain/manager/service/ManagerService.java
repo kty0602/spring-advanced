@@ -74,18 +74,13 @@ public class ManagerService {
     }
 
     @Transactional
-    public void deleteManager(long userId, long todoId, long managerId, AuthUser authUser) {
+    public void deleteManager(long todoId, long managerId, AuthUser authUser) {
 
         /**
          * 레벨 1-4 JWT 유효성 검사 로직 수정
          * 조건 : 인증을 컨트롤러가 아닌 필터에서 처리하게 한다.
          */
-        if(userId != authUser.getId()) {
-            throw new InvalidRequestException("삭제 권한이 없습니다!");
-        }
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new InvalidRequestException("User not found"));
+        User user = User.fromAuthUser(authUser);
 
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new InvalidRequestException("Todo not found"));

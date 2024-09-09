@@ -48,8 +48,6 @@ public class ManagerController {
             @PathVariable long managerId,
             @Auth AuthUser authUser
     ) {
-        Claims claims = jwtUtil.extractClaims(bearerToken.substring(7));
-        long userId = Long.parseLong(claims.getSubject());
-        managerService.deleteManager(userId, todoId, managerId, authUser);
+        managerService.deleteManager(todoId, managerId, authUser);
     }
 }
