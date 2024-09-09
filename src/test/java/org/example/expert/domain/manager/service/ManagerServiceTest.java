@@ -44,9 +44,14 @@ class ManagerServiceTest {
         long todoId = 1L;
         given(todoRepository.findById(todoId)).willReturn(Optional.empty());
 
+        /**
+         * 레벨 2-6 유닛 테스트 - 1
+         * 조건 : 테스트가 성공할 수 있도록 변경
+         * 수정 : "Manager not found" 에서 "Todo not found"으로 변경
+         */
         // when & then
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () -> managerService.getManagers(todoId));
-        assertEquals("Manager not found", exception.getMessage());
+        assertEquals("Todo not found", exception.getMessage());
     }
 
     @Test

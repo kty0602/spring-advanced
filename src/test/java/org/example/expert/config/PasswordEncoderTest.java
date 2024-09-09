@@ -19,6 +19,11 @@ class PasswordEncoderTest {
         String rawPassword = "testPassword";
         String encodedPassword = passwordEncoder.encode(rawPassword);
 
+        /**
+         * 레벨 2-5 테스트 연습 - 1
+         * 조건 : 테스트가 의도대로 성공할 수 있게 수정
+         * 수정 : rawPassword와 encodedPassword 위치 변경
+         */
         // when
         boolean matches = passwordEncoder.matches(rawPassword, encodedPassword);
 
