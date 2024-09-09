@@ -27,13 +27,22 @@ public class AuthService {
     @Transactional
     public SignupResponse signup(SignupRequest signupRequest) {
 
-        String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
-
-        UserRole userRole = UserRole.of(signupRequest.getUserRole());
+        /**
+         * 레벨 1-1 Early Return
+         * 조건 : signupRequest에 email값이 없을 때, encode() 동작이 일어나지 않도록 개선하기
+         */
+        String email = signupRequest.getEmail();
+        if(email.isEmpty()) {
+            throw new InvalidRequestException("이메일이 입력되지 않았습니다.");
+        }
 
         if (userRepository.existsByEmail(signupRequest.getEmail())) {
             throw new InvalidRequestException("이미 존재하는 이메일입니다.");
         }
+
+        String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
+
+        UserRole userRole = UserRole.of(signupRequest.getUserRole());
 
         User newUser = new User(
                 signupRequest.getEmail(),
