@@ -25,11 +25,11 @@ public class UserService {
 
     @Transactional
     public void changePassword(long userId, UserChangePasswordRequest userChangePasswordRequest) {
-        if (userChangePasswordRequest.getNewPassword().length() < 8 ||
-                !userChangePasswordRequest.getNewPassword().matches(".*\\d.*") ||
-                !userChangePasswordRequest.getNewPassword().matches(".*[A-Z].*")) {
-            throw new InvalidRequestException("새 비밀번호는 8자 이상이어야 하고, 숫자와 대문자를 포함해야 합니다.");
-        }
+        /**
+         * 레벨 1-3 메서드 분리
+         * 조건 : 복잡한 로직은 메서드로 분리하고, 이름만으로 동작을 이해할 수 있어야 한다.
+         */
+        checkNewPassword(userChangePasswordRequest);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new InvalidRequestException("User not found"));
@@ -44,4 +44,13 @@ public class UserService {
 
         user.changePassword(passwordEncoder.encode(userChangePasswordRequest.getNewPassword()));
     }
+
+    private void checkNewPassword(UserChangePasswordRequest userChangePasswordRequest) {
+        if (userChangePasswordRequest.getNewPassword().length() < 8 ||
+                !userChangePasswordRequest.getNewPassword().matches(".*\\d.*") ||
+                !userChangePasswordRequest.getNewPassword().matches(".*[A-Z].*")) {
+            throw new InvalidRequestException("새 비밀번호는 8자 이상이어야 하고, 숫자와 대문자를 포함해야 합니다.");
+        }
+    }
+
 }
