@@ -36,6 +36,15 @@ public class ManagerService {
         Todo todo = todoRepository.findById(todoId)
                 .orElseThrow(() -> new InvalidRequestException("Todo not found"));
 
+        /**
+         * 레벨 2-8 유닛 테스트 - 3
+         * 조건 : 테스트가 성공할 수 있도록 서비스 로직 수정
+         * 수정 : null인지 비교하는 if문 추가
+         */
+        if(todo.getUser() == null) {
+            throw new InvalidRequestException("담당자를 등록하려고 하는 유저가 일정을 만든 유저가 유효하지 않습니다.");
+        }
+
         if (!ObjectUtils.nullSafeEquals(user.getId(), todo.getUser().getId())) {
             throw new InvalidRequestException("담당자를 등록하려고 하는 유저가 일정을 만든 유저가 유효하지 않습니다.");
         }
