@@ -1,22 +1,25 @@
 package org.example.expert.domain.comment.service;
 
 import org.example.expert.domain.comment.dto.request.CommentSaveRequest;
+import org.example.expert.domain.comment.dto.response.CommentResponse;
 import org.example.expert.domain.comment.dto.response.CommentSaveResponse;
 import org.example.expert.domain.comment.entity.Comment;
 import org.example.expert.domain.comment.repository.CommentRepository;
 import org.example.expert.domain.common.dto.AuthUser;
 import org.example.expert.domain.common.exception.InvalidRequestException;
-import org.example.expert.domain.common.exception.ServerException;
 import org.example.expert.domain.todo.entity.Todo;
 import org.example.expert.domain.todo.repository.TodoRepository;
 import org.example.expert.domain.user.entity.User;
 import org.example.expert.domain.user.enums.UserRole;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -75,5 +78,30 @@ class CommentServiceTest {
 
         // then
         assertNotNull(result);
+    }
+
+    @Test
+    @DisplayName("목록 조회 리스트")
+    public void getCommentList() {
+        // given
+        long todoId = 1L;
+        User user = new User("test@example.com", "1234", UserRole.USER);
+        Comment comment1 = new Comment("댓글1", user, new Todo());
+        Comment comment2 = new Comment("댓글2", user, new Todo());
+
+        List<Comment> commentList = new ArrayList<>();
+        commentList.add(comment1);
+        commentList.add(comment2);
+
+        given(commentRepository.findByTodoIdWithUser(todoId)).willReturn(commentList);
+
+        // when
+        List<CommentResponse> result = commentService.getComments(todoId);
+
+        // then
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("댓글1", result.get(0).getContents());
+        assertEquals("댓글2", result.get(1).getContents());
     }
 }

@@ -12,6 +12,7 @@ import org.example.expert.domain.todo.repository.TodoRepository;
 import org.example.expert.domain.user.entity.User;
 import org.example.expert.domain.user.enums.UserRole;
 import org.example.expert.domain.user.repository.UserRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -126,4 +127,32 @@ class ManagerServiceTest {
         assertEquals(managerUser.getId(), response.getUser().getId());
         assertEquals(managerUser.getEmail(), response.getUser().getEmail());
     }
+
+    @Test
+    @DisplayName("담당자 배치 성공")
+    public void saveManager_success() {
+        // given
+        AuthUser authUser1 = new AuthUser(1L, "user@example.com", UserRole.USER);
+        User user = User.fromAuthUser(authUser1);
+
+        AuthUser authUser2 = new AuthUser(2L, "admin@example.com", UserRole.ADMIN);
+        User manager = User.fromAuthUser(authUser2);
+
+        long todoId = 1L;
+        Todo todo = new Todo("title1", "content1", "Sunny", user);
+
+        ManagerSaveRequest managerSaveRequest = new ManagerSaveRequest(manager.getId());
+
+        given(todoRepository.findById(todoId)).willReturn(Optional.of(todo));
+        given(userRepository.findById(manager.getId())).willReturn(Optional.of(manager));
+        given(managerRepository.save(any(Manager.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        ManagerSaveResponse response = managerService.saveManager(authUser1, todoId, managerSaveRequest);
+
+        // then
+        assertNotNull(response);
+        assertEquals(manager.getId(), response.getUser().getId());
+    }
+
 }
